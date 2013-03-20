@@ -1,0 +1,20 @@
+exit
+ensime generate
+test
+exit
+run
+test
+exit
+test
+shell
+import eastsun.math.matrix._
+help
+exit
+test
+exit
+test
+compile
+test
+compile
+test
+exit

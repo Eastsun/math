@@ -1,0 +1,43 @@
+;; If your project contains a lot of files, it is advisable to enable (:disable-source-load-on-startup t)
+;; Otherwise Ensime might incur a massive lag at startup time
+;; See more information about that at http://aemoncannon.github.com/ensime/index.html
+
+(
+  :subprojects (
+    (
+      :name "default-5247d9"
+      :module-name "default-5247d9"
+      :depends-on-modules (
+      
+      )
+      :package "default"
+      :version "0.1-SNAPSHOT"
+      :compile-deps (
+        "/home/future/.sbt/boot/scala-2.10.1/lib/scala-library.jar"
+      )
+      :runtime-deps (
+        "/home/future/.sbt/boot/scala-2.10.1/lib/scala-library.jar"
+        "/home/future/project/math/target/scala-2.10/classes"
+        "/home/future/project/math/target/scala-2.10/classes"
+      )
+      :test-deps (
+        "/home/future/.sbt/boot/scala-2.10.1/lib/scala-library.jar"
+        "/home/future/.ivy2/cache/org.scalatest/scalatest_2.10/jars/scalatest_2.10-1.9.1.jar"
+        "/home/future/.ivy2/cache/org.scala-lang/scala-actors/jars/scala-actors-2.10.0.jar"
+        "/home/future/.ivy2/cache/org.scala-lang/scala-reflect/jars/scala-reflect-2.10.0.jar"
+        "/home/future/project/math/target/scala-2.10/classes"
+        "/home/future/project/math/target/scala-2.10/test-classes"
+      )
+      :source-roots (
+        "/home/future/project/math/src/main/scala"
+        "/home/future/project/math/src/main/java"
+        "/home/future/project/math/target/scala-2.10/src_managed/main"
+        "/home/future/project/math/src/test/scala"
+        "/home/future/project/math/src/test/java"
+        "/home/future/project/math/target/scala-2.10/src_managed/test"
+      )
+      :target "/home/future/project/math/target/scala-2.10/classes"
+      :test-target "/home/future/project/math/target/scala-2.10/test-classes"
+    )
+  )
+)
