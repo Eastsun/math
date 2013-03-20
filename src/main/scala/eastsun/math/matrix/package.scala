@@ -146,7 +146,8 @@ package matrix {
     implicit object EndedRangeIsIndexed extends Indexed[EndedRange] {
       def atBound(bound: Int, index: EndedRange): Indices = {
         val seq = index.toIndexedSeq(bound)
-        new AbstractRectData[Int](1, seq.size) {
+        val (nRows, nCols) = if(index eq all) (seq.size, 1) else (1, seq.size)
+        new AbstractRectData[Int](nRows, nCols) {
           @inline override def apply(ind: Int): Int = seq(ind)
           @inline override def apply(row: Int, col: Int): Int = seq(col)
         }
