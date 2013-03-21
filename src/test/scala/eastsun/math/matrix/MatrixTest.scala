@@ -60,5 +60,12 @@ class ExampleSuite extends FunSuite {
     m(all, 0) = 0
     val firstCol = m(all, 0)
     assert(firstCol.iterator.forall(_==0))
+    m(0, all) = 1
+    val firstRow = m(0, all)
+    assert(firstRow.iterator.forall(_==1))
+
+    val m2 = rand[Int](3, 5).map(_%10)
+    val negative = m2(m2 < 0)
+    assert(negative.iterator.forall(_ < 0))
   }
 }
