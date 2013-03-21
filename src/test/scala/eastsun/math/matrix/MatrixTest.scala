@@ -54,4 +54,11 @@ class ExampleSuite extends FunSuite {
     val trace2 = (0 until m2.rows).map(i => m2(i,i)).sum
     assert(trace1 === trace2)
   }
+
+  test("Matrix update operate") {
+    val m = rand[Int](3, 4).map(_%10)
+    m(all, 0) = 0
+    val firstCol = m(all, 0)
+    assert(firstCol.iterator.forall(_==0))
+  }
 }
