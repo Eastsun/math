@@ -43,7 +43,9 @@ trait Matrix[A] extends RectBuffer[A] {
   def reified(): Matrix[A]
 
   def +(that: Matrix[A])(implicit sg: Semigroup[A]): Matrix[A]
+  def +=(that: Matrix[A])(implicit sg: Semigroup[A]): Matrix[A]
   def *(that: Matrix[A])(implicit r: Ring[A]): Matrix[A]
+  def *=(that: Matrix[A])(implicit r: Ring[A]): Matrix[A] 
   def +(that: A)(implicit sg: Semigroup[A]): Matrix[A]
   def *(that: A)(implicit r: Ring[A]): Matrix[A]
   def kron(that: Matrix[A])(implicit r: Ring[A]): Matrix[A]

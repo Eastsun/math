@@ -147,13 +147,25 @@ protected[matrix] abstract class ArrayMatrix[A: ClassTag](val rows: Int, val col
   def +(that: Matrix[A])(implicit sg: Semigroup[A]): Matrix[A] = {
     checkSameSize(this, that)
     val buf = Array.ofDim[A](numel)
-    var ind = buf.length - 1
+    var ind = numel - 1
     while (ind >= 0) {
       buf(ind) = sg.plus(this(ind), that(ind))
       ind -= 1
     }
     new DirectMatrix(rows, cols, buf)
   }
+
+  def +=(that: Matrix[A])(implicit sg: Semigroup[A]): Matrix[A] = {
+    checkSameSize(this, that)
+    reifyLinks()
+    var ind = numel - 1
+    while (ind >= 0) {
+      buffer(ind) = sg.plus(this(ind), that(ind))
+      ind -= 1
+    }
+    this
+  }
+
 
   def *(that: Matrix[A])(implicit r: Ring[A]): Matrix[A] = {
     if (this.cols != that.rows)
@@ -174,6 +186,29 @@ protected[matrix] abstract class ArrayMatrix[A: ClassTag](val rows: Int, val col
       ind -= 1
     }
     new DirectMatrix(this.rows, that.cols, buf)
+  }
+
+  def *=(that: Matrix[A])(implicit r: Ring[A]): Matrix[A] = {
+    if (rows != cols || that.rows != that.cols || rows != that.rows)
+      throw new MatrixSizeMatchError("Matrix size must agree.")
+
+    val buf = Array.ofDim[A](numel)
+    var ind = numel - 1
+    while (ind >= 0) {
+      val row = ind % this.rows
+      val col = ind / this.rows
+      var idx = this.cols - 1
+      var res = r.zero
+      while (idx >= 0) {
+        res = r.plus(res, r.times(this(row, idx), that(idx, col)))
+        idx -= 1
+      }
+      buf(ind) = res
+      ind -= 1
+    }
+    reifyLinks()
+    buffer = buf
+    this
   }
   
   def +(that: A)(implicit sg: Semigroup[A]): Matrix[A] = {

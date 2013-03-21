@@ -79,10 +79,21 @@ private[matrix] abstract class DependentMatrix[A: ClassTag](nRows: Int, nCols: I
       new DirectMatrix(rows, cols, Array.tabulate(numel)(ind => sg.plus(dependentApply(ind), that)))
     } else super.+(that)
   }
+
+  override def +=(that: Matrix[A])(implicit sg: Semigroup[A]): Matrix[A] = {
+    if (isDependent) reified()
+    super.+=(that)
+  }
+
   override def *(that: A)(implicit r: Ring[A]): Matrix[A] = {
     if (isDependent) {
       new DirectMatrix(rows, cols, Array.tabulate(numel)(ind => r.times(dependentApply(ind), that)))
     } else super.*(that)
+  }
+
+  override def *=(that: Matrix[A])(implicit r: Ring[A]): Matrix[A] = {
+    if (isDependent) reified()
+    super.*=(that)
   }
 
   override def map[B](f: A => B)(implicit ct: ClassTag[B]): Matrix[B] =
@@ -123,7 +134,7 @@ private[matrix] abstract class DependentMatrix[A: ClassTag](nRows: Int, nCols: I
       new BooleanMatrix(rows, cols, buf)
     } else super.>=(that)
   }
-  
+
   override def <(that: A)(implicit ord: Ordering[A]): Matrix[Boolean] = {
     if (isDependent) {
       val buf = Array.ofDim[Long]((numel + WordL - 1) >> LogWL)
@@ -147,7 +158,6 @@ private[matrix] abstract class DependentMatrix[A: ClassTag](nRows: Int, nCols: I
       new BooleanMatrix(rows, cols, buf)
     } else super.>=(that)
   }
-
 
   override def unzip[T1, T2](implicit isPair: A =:= (T1, T2), ct1: ClassTag[T1], ct2: ClassTag[T2]): (Matrix[T1], Matrix[T2]) = {
     if (isDependent) {
@@ -217,5 +227,4 @@ private[matrix] abstract class DoubleDependentMatrix[A: ClassTag](nRows: Int, nC
     underingly2 = null
   }
 }
-
 

@@ -143,7 +143,7 @@ private[matrix] class BooleanMatrix(val rows: Int, val cols: Int, protected val 
     }
     new BooleanMatrix(rows, cols, buf)
   }
-  
+
   def <(that: Boolean)(implicit ord: Ordering[Boolean]): Matrix[Boolean] = {
     val buf = Array.ofDim[Long]((numel + WordL - 1) >> LogWL)
     var ind = numel - 1
@@ -189,29 +189,53 @@ private[matrix] class BooleanMatrix(val rows: Int, val cols: Int, protected val 
   def +(that: Matrix[Boolean])(implicit sg: Semigroup[Boolean]): Matrix[Boolean] = {
     checkSameSize(this, that)
     val buffer = Array.ofDim[Long](bits.length)
-    if ((sg eq Field.BooleanIsField) && that.isInstanceOf[BooleanMatrix]) {
-      val tBits = that.asInstanceOf[BooleanMatrix].bits
-      var ind = bits.length - 1
+    plus(bits, that, buffer)
+    new BooleanMatrix(rows, cols, buffer)
+  }
+
+  def +=(that: Matrix[Boolean])(implicit sg: Semigroup[Boolean]): Matrix[Boolean] = {
+    checkSameSize(this, that)
+    plus(bits, that, bits)
+    this
+  }
+
+  private def plus(left: Array[Long], right: Matrix[Boolean], dst: Array[Long])(implicit sg: Semigroup[Boolean]) {
+    if ((sg eq Field.BooleanIsField) && right.isInstanceOf[BooleanMatrix]) {
+      val tBits = right.asInstanceOf[BooleanMatrix].bits
+      var ind = dst.length - 1
       while (ind >= 0) {
-        buffer(ind) = bits(ind) ^ tBits(ind)
+        dst(ind) = left(ind) ^ tBits(ind)
         ind -= 1
       }
     } else {
-      var ind = numel - 1
+      var ind = dst.length - 1
       while (ind >= 0) {
-        if (sg.plus(this(ind), that(ind)))
-          buffer(ind >> LogWL) |= 1L << ind
+        if (sg.plus((left(ind >> LogWL) & (1L << ind)) != 0, right(ind)))
+          dst(ind >> LogWL) |= 1L << ind
         ind -= 1
       }
     }
-    new BooleanMatrix(rows, cols, buffer)
   }
 
   def *(that: Matrix[Boolean])(implicit r: Ring[Boolean]): Matrix[Boolean] = {
     if (this.cols != that.rows)
       throw new MatrixSizeMatchError("Matrix size must agree.")
 
-    val num = this.rows * that.cols
+    val buffer = times(this, that)
+    new BooleanMatrix(this.rows, that.cols, buffer)
+  }
+
+  def *=(that: Matrix[Boolean])(implicit r: Ring[Boolean]): Matrix[Boolean] = {
+    if (rows != cols || that.rows != cols || rows != that.rows)
+      throw new MatrixSizeMatchError("Matrix size must agree.")
+
+    val buffer = times(this, that)
+    Array.copy(buffer, 0, bits, 0, bits.length)
+    this
+  }
+
+  private def times(left: Matrix[Boolean], right: Matrix[Boolean])(implicit r: Ring[Boolean]): Array[Long] = {
+    val num = left.rows * right.cols
     val buffer = Array.ofDim[Long]((num + WordL - 1) >> LogWL)
     var ind = num - 1
     while (ind >= 0) {
@@ -219,14 +243,14 @@ private[matrix] class BooleanMatrix(val rows: Int, val cols: Int, protected val 
       var res = r.zero
       var idx = cols - 1
       while (idx >= 0) {
-        res = r.plus(res, r.times(this(rIdx, idx), that(idx, cIdx)))
+        res = r.plus(res, r.times(left(rIdx, idx), right(idx, cIdx)))
         idx -= 1
       }
       if (res)
         buffer(ind >> LogWL) |= 1L << ind
       ind -= 1
     }
-    new BooleanMatrix(this.rows, that.cols, buffer)
+    buffer
   }
 
   def +(that: Boolean)(implicit sg: Semigroup[Boolean]): Matrix[Boolean] = {

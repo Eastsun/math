@@ -25,4 +25,33 @@ class ExampleSuite extends FunSuite {
     val subMatrix = m(0 to end by 3, 0 to end by 3)
     assert(subMatrix === Matrix(3, 3, 1::4::7::28::31::34::55::58::61::Nil))
   }
+
+  test("Matrix plus operate") {
+    val m1 = rand[Byte](3, 4).map(_%10)
+    val m2 = rand[Byte](3, 4).map(_%10)
+    val m3 = m1 + m2
+    val m4 = m2 + m1
+    m1 += m2
+    assert(m1 === m3)
+    assert(m1 === m4)
+
+    val b1 = rand[Boolean](2, 5)
+    val b2 = rand[Boolean](2, 5)
+    val b3 = b1 + b2
+    val b4 = b2 + b1
+    b1 += b2
+    assert(b1 === b3)
+    assert(b1 === b4)
+  }
+
+  test("Matrix multiply operate") {
+    val n1 = rand[Int](3, 4).map(_%10)
+    val n2 = rand[Int](4, 3).map(_%10)
+
+    val m1 = n1 * n2
+    val m2 = n2 * n1
+    val trace1 = (0 until m1.rows).map(i => m1(i,i)).sum
+    val trace2 = (0 until m2.rows).map(i => m2(i,i)).sum
+    assert(trace1 === trace2)
+  }
 }
