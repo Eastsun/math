@@ -9,6 +9,10 @@ class ExampleSuite extends FunSuite {
     val randDoubleMat = rand(3, 4)
     val randByteMat = rand[Byte](3, 4)
     val randIntMat = rand[Int](3, 4)
+    val matInitWithSeq = Matrix(3, 4, 1 to 12)
+    for(row <- 0 until matInitWithSeq.rows; col <- 0 until matInitWithSeq.cols) {
+      assert(matInitWithSeq(row, col) === row + col*matInitWithSeq.rows + 1)
+    }
   }
 
   test("Matrix indexing") {
