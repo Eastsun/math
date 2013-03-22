@@ -5,6 +5,12 @@ import Matrix._
 
 class ExampleSuite extends FunSuite {
 
+  test("Matrix create") {
+    val randDoubleMat = rand(3, 4)
+    val randByteMat = rand[Byte](3, 4)
+    val randIntMat = rand[Int](3, 4)
+  }
+
   test("Matrix indexing") {
     val m = Matrix(9, 9, 1 to 81)
 
